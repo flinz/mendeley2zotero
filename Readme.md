@@ -16,7 +16,7 @@ The export formats provided in Mendeley (biblatex, rsi) do not include any of th
 
 ## Usage & supported metadata
 
-```python exporter.py -m M -z Z {added_dates, collections}```
+```python exporter.py -m M -z Z {added_dates, collections, repair_dates}```
 
 ### M
 Path to mendeley sqlite file - on OSX this should reside in ```/Users/USERNAME/Library/Application Support/Mendeley Desktop```
