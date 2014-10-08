@@ -51,5 +51,5 @@ Usage:
 
 # Versions
 
-* v.0.2: fixed a bug with the sqlite datetime format that prevented syncing with the zotero server - see the [repair dates](#pookie) function if you were affected.
+* v.0.2: fixed a bug with the sqlite datetime format that prevented syncing with the zotero server - see the [repair dates](#repair_dates) function if you were affected.
 * v.0.1: initial version
