@@ -37,8 +37,12 @@ For now, beforehand, create by hand in Zotero the desired structure of Collectio
 
 > **NOTE:** Nonunique names are not supported for now - i.e. all your Collections should have a distinct name.
 
+### repair_dates
+<a name="repair_dates"></a>
+only neccessary if you ran v.0.1 to import added dates. this forces all added_date entries to the zotero compliant datetime. This was fixed in v.0.2 and should not be neccessary. 
+
 Usage: 
-```python exporter.py -m M -z Z collections```
+```python exporter.py -m M -z Z repair_dates```
 
 ## Dependencies
 
@@ -47,4 +51,5 @@ Usage:
 
 # Versions
 
+* v.0.2: fixed a bug with the sqlite datetime format that prevented syncing with the zotero server - see the [repair dates](#pookie) function if you were affected.
 * v.0.1: initial version
