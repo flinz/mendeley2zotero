@@ -44,3 +44,7 @@ Usage:
 
 * [SQLAlchemy](http://www.sqlalchemy.org/).
 * Indirectly: [SQLACodegen](https://github.com/ksindi/sqlacodegen). SQLACodegen was used to reverse engineer the database object relational model of mendeley and zotero in the db_classes_*.py files.
+
+# Versions
+
+* v.0.1: initial version
