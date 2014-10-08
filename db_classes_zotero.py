@@ -3,11 +3,19 @@ from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Index, Integ
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import NullType
 from sqlalchemy.ext.declarative import declarative_base
-
+from sqlalchemy.dialects.sqlite import DATETIME
+import re
 
 Base = declarative_base()
 metadata = Base.metadata
 
+# custom date_time format for zotero, prevents HH:MM:SS.SSSS entries - these messed up the
+# zotero syncing (see https://forums.zotero.org/discussion/41017)
+
+sqlite_date = DATETIME(
+    storage_format="%(year)04d-%(month)02d-%(day)02d %(hour)02d:%(minute)02d:%(second)02d",
+    regexp=r"(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)(?:.(\d+))?"
+)
 
 class Annotation(Base):
     __tablename__ = 'annotations'
@@ -72,9 +80,9 @@ class Collection(Base):
     collectionID = Column(Integer, primary_key=True)
     collectionName = Column(Text, nullable=False)
     parentCollectionID = Column(ForeignKey('collections.collectionID'), server_default=u'NULL')
-    dateAdded = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    dateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateAdded = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
     libraryID = Column(Integer)
     key = Column(Text, nullable=False)
 
@@ -107,9 +115,9 @@ class Creator(Base):
 
     creatorID = Column(Integer, primary_key=True)
     creatorDataID = Column(ForeignKey('creatorData.creatorDataID'), nullable=False, index=True)
-    dateAdded = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    dateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateAdded = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
     libraryID = Column(Integer)
     key = Column(Text, nullable=False)
 
@@ -366,9 +374,9 @@ class Item(Base):
 
     itemID = Column(Integer, primary_key=True)
     itemTypeID = Column(Integer, nullable=False)
-    dateAdded = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    dateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateAdded = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
     libraryID = Column(ForeignKey('libraries.libraryID'))
     key = Column(Text, nullable=False)
 
@@ -456,7 +464,7 @@ class Relation(Base):
     subject = Column(Text, primary_key=True, nullable=False)
     predicate = Column(Text, primary_key=True, nullable=False)
     object = Column(Text, primary_key=True, nullable=False, index=True)
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
 
 
 class Savedsearchcondition(Base):
@@ -477,9 +485,9 @@ class Savedsearch(Base):
 
     savedSearchID = Column(Integer, primary_key=True)
     savedSearchName = Column(Text, nullable=False)
-    dateAdded = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    dateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateAdded = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
     libraryID = Column(Integer)
     key = Column(Text, nullable=False)
 
@@ -532,9 +540,9 @@ class Tag(Base):
     tagID = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     type = Column(Integer, nullable=False)
-    dateAdded = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    dateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
-    clientDateModified = Column(DateTime, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateAdded = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    dateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
+    clientDateModified = Column(sqlite_date, nullable=False, server_default=u'CURRENT_TIMESTAMP')
     libraryID = Column(Integer)
     key = Column(Text, nullable=False)
 
