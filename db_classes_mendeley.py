@@ -1,5 +1,5 @@
 # coding: utf-8
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, Integer, LargeBinary, String, Table
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, Integer, LargeBinary, String, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import NullType
 from sqlalchemy.ext.declarative import declarative_base
@@ -63,9 +63,9 @@ t_DocumentFiles = Table(
     'DocumentFiles', metadata,
     Column('documentId', Integer, nullable=False, index=True),
     Column('hash', String, nullable=False, index=True),
-    Column('remoteUrl', String, nullable=False),
     Column('unlinked', Boolean, nullable=False),
-    Column('downloadRestricted', Boolean, nullable=False, server_default=u'0')
+    Column('downloadRestricted', Boolean, nullable=False, server_default=u'0'),
+    Column('remoteFileUuid', String, nullable=False, server_default=u"''")
 )
 
 
@@ -74,6 +74,7 @@ class Documentfolder(Base):
 
     documentId = Column(Integer, primary_key=True, nullable=False)
     folderId = Column(Integer, primary_key=True, nullable=False)
+    status = Column(String, nullable=False, server_default=u'ObjectCreated')
 
 
 class Documentfoldersbase(Base):
@@ -88,6 +89,19 @@ class Documentkeyword(Base):
 
     documentId = Column(Integer, primary_key=True, nullable=False)
     keyword = Column(String, primary_key=True, nullable=False)
+
+
+class Documentnote(Base):
+    __tablename__ = 'DocumentNotes'
+
+    id = Column(Integer, primary_key=True)
+    uuid = Column(String, nullable=False)
+    text = Column(String, nullable=False)
+    documentId = Column(ForeignKey('Documents.id'), nullable=False, index=True)
+    unlinked = Column(Boolean, nullable=False)
+    baseNote = Column(String)
+
+    Document = relationship(u'Document')
 
 
 class Documentreference(Base):
@@ -206,7 +220,7 @@ class Document(Base):
 class Eventattribute(Base):
     __tablename__ = 'EventAttributes'
 
-    eventId = Column(ForeignKey('EventLog.id'), primary_key=True)
+    eventId = Column(ForeignKey('EventLog.id'), primary_key=True, nullable=False)
     attribute = Column(String, primary_key=True, nullable=False)
     value = Column(String, nullable=False)
 
@@ -226,12 +240,14 @@ class Filehighlightrect(Base):
     __tablename__ = 'FileHighlightRects'
 
     id = Column(Integer, primary_key=True)
-    highlightId = Column(Integer, nullable=False)
+    highlightId = Column(ForeignKey('FileHighlights.id'), nullable=False, index=True)
     page = Column(Integer, nullable=False)
     x1 = Column(Float, nullable=False)
     y1 = Column(Float, nullable=False)
     x2 = Column(Float, nullable=False)
     y2 = Column(Float, nullable=False)
+
+    FileHighlight = relationship(u'Filehighlight')
 
 
 class Filehighlight(Base):
@@ -240,10 +256,14 @@ class Filehighlight(Base):
     id = Column(Integer, primary_key=True)
     author = Column(String)
     uuid = Column(String, nullable=False)
-    documentId = Column(Integer, nullable=False, index=True)
+    documentId = Column(ForeignKey('Documents.id'), nullable=False, index=True)
     fileHash = Column(String, nullable=False, index=True)
     createdTime = Column(String, nullable=False)
     unlinked = Column(Boolean, nullable=False)
+    color = Column(String, server_default=u'NULL')
+    profileUuid = Column(String, server_default=u'NULL')
+
+    Document = relationship(u'Document')
 
 
 class Filenote(Base):
@@ -252,7 +272,7 @@ class Filenote(Base):
     id = Column(Integer, primary_key=True)
     author = Column(String)
     uuid = Column(String, nullable=False)
-    documentId = Column(Integer, nullable=False, index=True)
+    documentId = Column(ForeignKey('Documents.id'), nullable=False, index=True)
     fileHash = Column(String, nullable=False, index=True)
     page = Column(Integer, nullable=False)
     x = Column(Float, nullable=False)
@@ -261,6 +281,11 @@ class Filenote(Base):
     modifiedTime = Column(String, nullable=False)
     createdTime = Column(String, nullable=False)
     unlinked = Column(Boolean, nullable=False)
+    baseNote = Column(String)
+    color = Column(String, server_default=u'NULL')
+    profileUuid = Column(String, server_default=u'NULL')
+
+    Document = relationship(u'Document')
 
 
 t_FileReferenceCountsView = Table(
@@ -311,6 +336,7 @@ class Group(Base):
 
     id = Column(Integer, primary_key=True)
     remoteId = Column(Integer)
+    remoteUuid = Column(String)
     name = Column(String)
     groupType = Column(String, nullable=False)
     status = Column(String, nullable=False)
@@ -341,6 +367,23 @@ class Importhistory(Base):
     ignore = Column(Boolean, nullable=False)
 
 
+class Lastreadstate(Base):
+    __tablename__ = 'LastReadStates'
+
+    documentId = Column(ForeignKey('Documents.id'), primary_key=True, nullable=False)
+    hash = Column(String, primary_key=True, nullable=False)
+    page = Column(Integer, nullable=False)
+    horizontalPosition = Column(Float)
+    verticalPosition = Column(Float, nullable=False)
+    zoomMode = Column(Integer)
+    zoomFactor = Column(Float)
+    rotation = Column(Integer)
+    status = Column(String)
+    timestamp = Column(String)
+
+    Document = relationship(u'Document')
+
+
 class Notduplicate(Base):
     __tablename__ = 'NotDuplicates'
 
@@ -348,20 +391,37 @@ class Notduplicate(Base):
     uuid2 = Column(String, primary_key=True, nullable=False)
 
 
-t_OAuth1AccessTokens = Table(
-    'OAuth1AccessTokens', metadata,
-    Column('token', String, nullable=False),
-    Column('tokenSecret', String, nullable=False)
-)
+class Profile(Base):
+    __tablename__ = 'Profiles'
+
+    uuid = Column(String, primary_key=True)
+    firstName = Column(String)
+    lastName = Column(String)
+    displayName = Column(String)
+    link = Column(String)
+    clientData = Column(Text)
+    photo = Column(LargeBinary)
+    lastsync = Column(Text)
+    isSelf = Column(Integer, nullable=False)
+
+
+class Remotedocumentnote(Base):
+    __tablename__ = 'RemoteDocumentNotes'
+
+    uuid = Column(String, primary_key=True)
+    status = Column(String, nullable=False)
+    revision = Column(Integer, nullable=False)
 
 
 class Remotedocument(Base):
     __tablename__ = 'RemoteDocuments'
 
-    documentId = Column(Integer, primary_key=True, index=True)
-    remoteId = Column(Integer, primary_key=True, index=True)
+    documentId = Column(Integer, primary_key=True, nullable=False, index=True)
+    remoteId = Column(Integer)
+    remoteUuid = Column(String, primary_key=True, nullable=False)
     groupId = Column(Integer, nullable=False)
     status = Column(String, nullable=False)
+    inTrash = Column(Boolean, nullable=False)
 
 
 class Remotefilehighlight(Base):
@@ -384,6 +444,7 @@ class Remotefolder(Base):
     __tablename__ = 'RemoteFolders'
 
     folderId = Column(Integer, primary_key=True)
+    remoteUuid = Column(String)
     remoteId = Column(Integer)
     parentRemoteId = Column(Integer)
     groupId = Column(Integer)
@@ -424,6 +485,14 @@ class Stat(Base):
 
     Action = Column(String(50), primary_key=True)
     Counter = Column(Integer, nullable=False)
+
+
+class Synctoken(Base):
+    __tablename__ = 'SyncTokens'
+
+    groupId = Column(Integer, primary_key=True, nullable=False, index=True, server_default=u'0')
+    type = Column(String, primary_key=True, nullable=False, index=True)
+    token = Column(String, nullable=False)
 
 
 t_SynchronisationToken = Table(

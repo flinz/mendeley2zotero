@@ -1,10 +1,9 @@
 # coding: utf-8
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Index, Integer, Numeric, Table, Text
+from sqlalchemy import Boolean, Column, Date, ForeignKey, Index, Integer, Numeric, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import NullType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.sqlite import DATETIME
-import re
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -39,9 +38,9 @@ class Annotation(Base):
 class Basefieldmapping(Base):
     __tablename__ = 'baseFieldMappings'
 
-    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True)
-    baseFieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, index=True)
-    fieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, index=True)
+    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True, nullable=False)
+    baseFieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, nullable=False, index=True)
+    fieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, nullable=False, index=True)
 
     field = relationship(u'Field', primaryjoin='Basefieldmapping.baseFieldID == Field.fieldID')
     field1 = relationship(u'Field', primaryjoin='Basefieldmapping.fieldID == Field.fieldID')
@@ -51,9 +50,9 @@ class Basefieldmapping(Base):
 class Basefieldmappingscombined(Base):
     __tablename__ = 'baseFieldMappingsCombined'
 
-    itemTypeID = Column(Integer, primary_key=True)
-    baseFieldID = Column(Integer, primary_key=True, index=True)
-    fieldID = Column(Integer, primary_key=True, index=True)
+    itemTypeID = Column(Integer, primary_key=True, nullable=False)
+    baseFieldID = Column(Integer, primary_key=True, nullable=False, index=True)
+    fieldID = Column(Integer, primary_key=True, nullable=False, index=True)
 
 
 class Charset(Base):
@@ -66,8 +65,8 @@ class Charset(Base):
 class Collectionitem(Base):
     __tablename__ = 'collectionItems'
 
-    collectionID = Column(ForeignKey('collections.collectionID'), primary_key=True)
-    itemID = Column(ForeignKey('items.itemID'), primary_key=True, index=True)
+    collectionID = Column(ForeignKey('collections.collectionID'), primary_key=True, nullable=False)
+    itemID = Column(ForeignKey('items.itemID'), primary_key=True, nullable=False, index=True)
     orderIndex = Column(Integer, server_default=u'0')
 
     collection = relationship(u'Collection')
@@ -127,9 +126,9 @@ class Creator(Base):
 class Custombasefieldmapping(Base):
     __tablename__ = 'customBaseFieldMappings'
 
-    customItemTypeID = Column(ForeignKey('customItemTypes.customItemTypeID'), primary_key=True)
-    baseFieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, index=True)
-    customFieldID = Column(ForeignKey('customFields.customFieldID'), primary_key=True, index=True)
+    customItemTypeID = Column(ForeignKey('customItemTypes.customItemTypeID'), primary_key=True, nullable=False)
+    baseFieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, nullable=False, index=True)
+    customFieldID = Column(ForeignKey('customFields.customFieldID'), primary_key=True, nullable=False, index=True)
 
     field = relationship(u'Field')
     customField = relationship(u'Customfield')
@@ -206,8 +205,8 @@ class Fieldscombined(Base):
 class Filetypemimetype(Base):
     __tablename__ = 'fileTypeMimeTypes'
 
-    fileTypeID = Column(ForeignKey('fileTypes.fileTypeID'), primary_key=True)
-    mimeType = Column(Text, primary_key=True, index=True)
+    fileTypeID = Column(ForeignKey('fileTypes.fileTypeID'), primary_key=True, nullable=False)
+    mimeType = Column(Text, primary_key=True, nullable=False, index=True)
 
     fileType = relationship(u'Filetype')
 
@@ -221,8 +220,8 @@ class Filetype(Base):
 
 t_fulltextItemWords = Table(
     'fulltextItemWords', metadata,
-    Column('wordID', ForeignKey('fulltextWords.wordID'), primary_key=True),
-    Column('itemID', ForeignKey('items.itemID'), primary_key=True, index=True)
+    Column('wordID', ForeignKey('fulltextWords.wordID'), primary_key=True, nullable=False),
+    Column('itemID', ForeignKey('items.itemID'), primary_key=True, nullable=False, index=True)
 )
 
 
@@ -276,10 +275,10 @@ class Highlight(Base):
 class Itemcreator(Base):
     __tablename__ = 'itemCreators'
 
-    itemID = Column(ForeignKey('items.itemID'), primary_key=True)
-    creatorID = Column(ForeignKey('creators.creatorID'), primary_key=True)
-    creatorTypeID = Column(ForeignKey('creatorTypes.creatorTypeID'), primary_key=True, server_default=u'1')
-    orderIndex = Column(Integer, primary_key=True, server_default=u'0')
+    itemID = Column(ForeignKey('items.itemID'), primary_key=True, nullable=False)
+    creatorID = Column(ForeignKey('creators.creatorID'), primary_key=True, nullable=False)
+    creatorTypeID = Column(ForeignKey('creatorTypes.creatorTypeID'), primary_key=True, nullable=False, server_default=u'1')
+    orderIndex = Column(Integer, primary_key=True, nullable=False, server_default=u'0')
 
     creator = relationship(u'Creator')
     creatorType = relationship(u'Creatortype')
@@ -289,8 +288,8 @@ class Itemcreator(Base):
 class Itemdatum(Base):
     __tablename__ = 'itemData'
 
-    itemID = Column(ForeignKey('items.itemID'), primary_key=True)
-    fieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, index=True)
+    itemID = Column(ForeignKey('items.itemID'), primary_key=True, nullable=False)
+    fieldID = Column(ForeignKey('fields.fieldID'), primary_key=True, nullable=False, index=True)
     valueID = Column(ForeignKey('itemDataValues.valueID'))
 
     field = relationship(u'Field')
@@ -307,23 +306,23 @@ class Itemdatavalue(Base):
 
 t_itemSeeAlso = Table(
     'itemSeeAlso', metadata,
-    Column('itemID', ForeignKey('items.itemID'), primary_key=True),
-    Column('linkedItemID', ForeignKey('items.itemID'), primary_key=True, index=True)
+    Column('itemID', ForeignKey('items.itemID'), primary_key=True, nullable=False),
+    Column('linkedItemID', ForeignKey('items.itemID'), primary_key=True, nullable=False, index=True)
 )
 
 
 t_itemTags = Table(
     'itemTags', metadata,
-    Column('itemID', ForeignKey('items.itemID'), primary_key=True),
-    Column('tagID', ForeignKey('tags.tagID'), primary_key=True, index=True)
+    Column('itemID', ForeignKey('items.itemID'), primary_key=True, nullable=False),
+    Column('tagID', ForeignKey('tags.tagID'), primary_key=True, nullable=False, index=True)
 )
 
 
 class Itemtypecreatortype(Base):
     __tablename__ = 'itemTypeCreatorTypes'
 
-    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True)
-    creatorTypeID = Column(ForeignKey('creatorTypes.creatorTypeID'), primary_key=True, index=True)
+    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True, nullable=False)
+    creatorTypeID = Column(ForeignKey('creatorTypes.creatorTypeID'), primary_key=True, nullable=False, index=True)
     primaryField = Column(Integer)
 
     creatorType = relationship(u'Creatortype')
@@ -333,10 +332,10 @@ class Itemtypecreatortype(Base):
 class Itemtypefield(Base):
     __tablename__ = 'itemTypeFields'
 
-    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True)
+    itemTypeID = Column(ForeignKey('itemTypes.itemTypeID'), primary_key=True, nullable=False)
     fieldID = Column(ForeignKey('fields.fieldID'), index=True)
     hide = Column(Integer)
-    orderIndex = Column(Integer, primary_key=True)
+    orderIndex = Column(Integer, primary_key=True, nullable=False)
 
     field = relationship(u'Field')
     itemType = relationship(u'Itemtype')
@@ -495,15 +494,15 @@ class Savedsearch(Base):
 class Setting(Base):
     __tablename__ = 'settings'
 
-    setting = Column(Text, primary_key=True)
-    key = Column(Text, primary_key=True)
+    setting = Column(Text, primary_key=True, nullable=False)
+    key = Column(Text, primary_key=True, nullable=False)
     value = Column(NullType)
 
 
 class Storagedeletelog(Base):
     __tablename__ = 'storageDeleteLog'
 
-    libraryID = Column(Integer, primary_key=True)
+    libraryID = Column(Integer, primary_key=True, nullable=False)
     key = Column(Text, primary_key=True, nullable=False)
     timestamp = Column(Integer, nullable=False, index=True)
 
@@ -550,9 +549,9 @@ class Tag(Base):
 class Transactionlog(Base):
     __tablename__ = 'transactionLog'
 
-    transactionID = Column(ForeignKey('transactions.transactionID'), primary_key=True)
-    field = Column(Text, primary_key=True)
-    value = Column(Numeric, primary_key=True)
+    transactionID = Column(ForeignKey('transactions.transactionID'), primary_key=True, nullable=False)
+    field = Column(Text, primary_key=True, nullable=False)
+    value = Column(Numeric, primary_key=True, nullable=False)
 
     transaction = relationship(u'Transaction')
 
