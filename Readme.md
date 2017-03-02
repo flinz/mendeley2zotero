@@ -16,7 +16,7 @@ The export formats provided in Mendeley (biblatex, rsi) do not include any of th
 
 ## Usage & supported metadata
 
-```python exporter.py -m M -z Z {added_dates, collections, repair_dates}```
+```python mendeley2zotero.py -m M -z Z {added_dates, collections, repair_dates}```
 
 ### M
 Path to mendeley sqlite file - on OSX this should reside in ```/Users/USERNAME/Library/Application Support/Mendeley Desktop```
@@ -28,7 +28,7 @@ Path to zotero sqlite file - on OSX this should reside in ```/Users/USERNAME/Lib
 transfer "date added" information to Zotero
 
 Usage:
-```python exporter.py -m M -z Z added_dates```
+```python mendeley2zotero.py -m M -z Z added_dates```
 
 ### collections
 transfer Mendeley folders to Zotero collections
@@ -42,7 +42,7 @@ For now, beforehand, create by hand in Zotero the desired structure of Collectio
 only neccessary if you ran v.0.1 to import added dates. this forces all added_date entries to the zotero compliant datetime. This was fixed in v.0.2 and should not be neccessary. 
 
 Usage: 
-```python exporter.py -m M -z Z repair_dates```
+```python mendeley2zotero.py -m M -z Z repair_dates```
 
 ## Dependencies
 
