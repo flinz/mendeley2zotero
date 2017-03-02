@@ -151,7 +151,7 @@ class Document(Base):
     deletionPending = Column(Integer)
     favourite = Column(Integer)
     read = Column(Integer)
-    onlyReference = Column(Integer)
+    # onlyReference = Column(Integer)
     type = Column(String)
     abstract = Column(String)
     added = Column(Integer)
