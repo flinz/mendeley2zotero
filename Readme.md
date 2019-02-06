@@ -1,6 +1,10 @@
 # Mendeley2Zotero
 
-**A mendeley to zotero metadata exporter**
+## Important note (as of 02/2019)
+
+This tool probably will not work on any newer versions of Mendeley (>=1.19), since [they started encrypting the local database](https://github.com/rdiaz02/Adios_Mendeley/issues/4). In addition, [Zotero has since added official Mendeley import functionality](https://www.zotero.org/support/kb/mendeley_import), which I would recommend giving a shot before trying anything else.
+
+## A mendeley to zotero metadata exporter
 
 Tool to transfer metadata which is not covered in the existing Mendeley export formats (biblatex, rsi) from Mendeley to Zotero.
 
