@@ -94,7 +94,7 @@ else:
             # get the maximum date added (can have more than one title matching)
             d_added = max([mt.added for mt in m_titles])
             # convert to datetime
-            d_added = datetime.datetime.utcfromtimestamp(d_added)
+            d_added = datetime.datetime.utcfromtimestamp(d_added/1000)
             z_item.dateAdded = d_added
             
             session["z"].add(z_item)
